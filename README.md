@@ -21,14 +21,7 @@ A FlowJo v10 workspace plugin that lets you **bulk-recolor histogram stacks** in
 
 ## Requirements
 
-| Item | Details |
-|------|---------|
 | FlowJo | v10.x (tested on 10.10) |
-| Java JDK | 8 or later |
-| Maven | 3.6+ (build only) |
-| FlowJo SDK (`fjlib.jar`) | Ships with FlowJo — see Build Instructions |
-
----
 
 ## Installation
 
