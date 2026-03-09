@@ -92,20 +92,6 @@ The `chartFill` attribute uses FlowJo's internal string values:
 
 ---
 
-## Project Structure
-
-```
-FlowJoBulkColorPlugin/
-├── pom.xml
-└── src/
-    └── main/
-        └── java/
-            └── com/flowjo/plugin/bulkcolor/
-                └── BulkColorHistograms.java
-```
-
----
-
 ## Troubleshooting
 
 | Symptom | Fix |
@@ -124,13 +110,6 @@ Bug reports and pull requests are welcome. If you have a use case not covered �
 
 ---
 
-## License
-
-MIT License — see [LICENSE](LICENSE) for details.
-
----
-
 ## Contact
 
-For questions about the FlowJo SDK: [flowjo@bd.com](mailto:flowjo@bd.com)  
 FlowJo plugin developer guide: https://docs.flowjo.com/flowjo/plugins-2/so-you-want-to-become-a-plugin-developer/
