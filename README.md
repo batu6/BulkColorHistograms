@@ -4,91 +4,56 @@ A FlowJo v10 workspace plugin that lets you **bulk-recolor histogram stacks** in
 
 ---
 
-## Features
-
-- Works with **stacked, overlaid, and single histograms** in the Layout Editor
-- Change **fill color and/or opacity** independently
-- **Multi-round apply** — the dialog stays open so you can apply different colors to different groups before committing
-- **Cancel** undoes all changes made in the current session
-- Three **scope modes** control how broadly a color change is applied:
-  - *All layouts & gates* — applies to every histogram showing the same sample and fluorophore, anywhere in the workspace
-  - *Same layout only* — applies within the current layout only
-  - *Selected only* — applies strictly to the histograms you checked
-- Histograms are **grouped by layout** and displayed in a 3-column grid with per-stack select-all checkboxes
-- Colors and opacity **persist across saves** — no need to re-apply after Cmd/Ctrl+S
-
----
-
 ## Requirements
 
-| FlowJo | v10.x (tested on 10.10) |
+- **FlowJo** v10.x (tested on 10.10)
+
+---
 
 ## Installation
 
-1. Download `BulkColorHistograms-1.1.jar` from the [Releases](../../releases) page.
-2. Copy it into your FlowJo plugins folder
-3. Open FlowJo and go to **Workspace tab → Plugins → Add Workspace Plugin**.
+1. Download the latest release from the [Releases](../../releases) page.
+2. Copy it into your FlowJo plugins folder:
+   - **macOS**: `/Applications/plugins/` (create it if it doesn't exist)
+   - **Windows**: `C:\Program Files\FlowJo_v10\plugins\`
+3. Open FlowJo and go to **Workspace tab → Plugins → Add Workspace Plugin**. You should see the plugin there.
 
 ---
-
 
 ## Usage
 
-1. Open a workspace (`.wsp`) that contains one or more layouts with histograms.
-2. **Press Cmd+S / Ctrl+S** to save — this is what triggers the plugin dialog.
-3. The **BulkColorHistograms** dialog opens showing all histograms grouped by layout.
-4. Check the histograms you want to recolor. Use the **Select all** checkbox in each stack panel, or the global **Select/Deselect All** at the top.
-5. Choose your **fill color** (click the color swatch) and/or **opacity** from the dropdown.
-6. Set the **scope** using the Apply to dropdown:
-   - *All layouts & gates* — recolors matching histograms everywhere
-   - *Same layout only* — recolors within the same layout
-   - *Selected only* — recolors exactly what you checked
-7. Click **Apply**. The dialog stays open — repeat steps 4–6 for other groups if needed.
-8. Click **Done** to commit all changes, or **Cancel** to undo everything.
-9. Close and reopen the workspace file to see the updated colors — FlowJo caches its layout renders and a full reload is required.
+0. Ideally use it after you organized your data for one channel of interest.
+1. After loading the plugin, save the file to trigger the plugin dialog.
+2. The **BulkColorHistograms** dialog opens showing all histogram stacks grouped by layout.
+3. Set your scope options
 
-> **Note:** The plugin re-applies your color choices on every subsequent save, so your colors won't be lost if you save multiple times.
+   **Apply to** — controls how broadly a single checkbox selection expands:
+   - *Selected samples only* — recolors exactly what you checked, no expansion
+   - *Same sample + fluorophore + gate* — also checks matching histograms with the same sample, channel, and gate (good for congenically marked samples)
+   - *Same sample + fluorophore* — also checks matching histograms with the same sample and channel across any gate
 
----
+   **Layout scope** — controls whether matching extends across layouts or stays within the same one:
+   - *Within same layout*
+   - *Across all layouts*
 
-## How It Works
-
-FlowJo workspace files (`.wsp`) are XML. Each histogram stack in the Layout Editor is a `<ChartData>` element containing one `<DataLayer>` per sample, each with a `<LegendSpec>` that holds the color and fill:
-
-```xml
-<ChartData figID="..." offsetHistograms="1">
-  <Graph type="Histogram">
-    <Axis dimension="x" name="PE-A"/>
-  </Graph>
-  <PopModelList>
-    <DataLayer path="Lymphocytes" sampleID="3">
-      <LegendSpec color="#FF0000" chartFill="le.chartfill.tinted.40"/>
-    </DataLayer>
-  </PopModelList>
-</ChartData>
-```
-
-The plugin implements `WorkspacePluginInterface` and intercepts the `save()` call. It:
-
-1. Walks the workspace XML tree to collect all histogram `<ChartData>` blocks
-2. On the first save, shows the selection dialog
-3. On **Apply/Done**, updates the `color` and `chartFill` attributes on the relevant `<LegendSpec>` elements — both in FlowJo's live in-memory XML tree and by patching the `.wsp` file on disk after a short delay (to survive FlowJo's own save overwrite)
-4. On subsequent saves, silently re-applies the stored color specs
+4. Check the histograms you want to recolor. 
+5. Choose a **fill color** (click the color swatch) and/or **opacity** from the dropdown.
+6. Click **Apply**. The dialog stays open — repeat for other groups if needed.
+7. Click **Done** to commit all changes, or **Cancel** to undo everything.
+8. **Close and reopen** the `.wsp` file to see the updated colors in your layouts.
 
 ---
 
-## Opacity Values
+## Features
 
-The `chartFill` attribute uses FlowJo's internal string values:
-
-| Display | XML value |
-|---------|-----------|
-| 0% (outline only) | `le.chartfill.none` |
-| 20% | `le.chartfill.tinted.20` |
-| 40% | `le.chartfill.tinted.40` |
-| 60% | `le.chartfill.tinted.60` |
-| 80% | `le.chartfill.tinted.80` |
-| 100% (solid) | `le.chartfill.filled` |
+- Stress free, efficient coloring of histograms.
+- Stacked, overlaid, and single histograms are all supported
+- Histograms are grouped by layout in a 3-column grid with per-stack select-all checkboxes
+- Stack labels show the antibody name alongside the fluorophore (e.g. `CD4 - FITC-A`).
+- Each sample row shows a **color swatch** and **opacity %** that update live after Apply
+- Sample name and gate path are shown on separate lines for easy reading
+- **Multi-round apply** — apply different colors to different groups before committing.
+- All scope and filter preferences are **saved between sessions**
 
 ---
 
@@ -97,19 +62,14 @@ The `chartFill` attribute uses FlowJo's internal string values:
 | Symptom | Fix |
 |---------|-----|
 | Dialog doesn't appear | Make sure the plugin is registered: Workspace tab → Plugins → Add Workspace Plugin |
-| No histograms shown in dialog | The workspace must have at least one Layout with histograms in it |
-| Colors revert after reopen | Make sure you clicked **Done** (not Cancel) and saved again after the dialog closed |
-| Colors visible only after reopen | This is expected — FlowJo caches layout renders; close and reopen the `.wsp` file |
-
+| No histograms shown | The workspace must have at least one Layout with histograms in it |
+| Colors revert after reopening | Make sure you clicked **Done** (not Cancel) and saved again after the dialog |
+| Colors only visible after reopen | Expected — FlowJo caches layout renders; close and reopen the `.wsp` to refresh |
 
 ---
 
 ## Contributing
 
-Bug reports and pull requests are welcome. If you have a use case not covered — e.g. bulk-changing line weight, line style, or supporting dot plot colors — feel free to open an issue.
+Feel free to open an issue if you find a bug or have a feature request.
 
 ---
-
-## Contact
-
-FlowJo plugin developer guide: https://docs.flowjo.com/flowjo/plugins-2/so-you-want-to-become-a-plugin-developer/
