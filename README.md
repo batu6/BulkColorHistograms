@@ -2,6 +2,8 @@
 
 A FlowJo v10 workspace plugin that lets you **bulk-recolor histogram stacks** in the Layout Editor. FlowJo only allows you to change one histogram's color at a time; this plugin adds a dialog where you can select any number of histograms across all your layouts and recolor them in one step.
 
+This has been a dream plugin for me. I've always wanted to have a tool that would allow me to change the colors easily. However, unfortunately my knowledge in R shiny was not much helpful in development of this plugin. In the end, I was able to realize this project thanks to Claude AI. I hope this plugin to be helpful for the scientist using FlowJo. -BA-
+
 ---
 
 ## Requirements
@@ -31,6 +33,8 @@ A FlowJo v10 workspace plugin that lets you **bulk-recolor histogram stacks** in
    - *Selected samples only* — recolors exactly what you checked, no expansion
    - *Same sample + fluorophore + gate* — also checks matching histograms with the same sample, channel, and gate (good for congenically marked samples)
    - *Same sample + fluorophore* — also checks matching histograms with the same sample and channel across any gate
+  
+   - Rowwise — Allows selection of samples belonging to same row in different histograms.
 
    **Layout scope** — controls whether matching extends across layouts or stays within the same one:
    - *Within same layout*
